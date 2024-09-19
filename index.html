@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalize Your Hoodie</title>
+    <style>
+        #receipt {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
+    <script>
+        function generateUniqueReceiptNumber() {
+            return 'H' + new Date().getTime(); // Generate a unique number based on the current timestamp
+        }
+
+        function validateForm(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Get form elements
+            const message = document.getElementById('message').value;
+            const numHoodies = document.getElementById('numHoodies').value;
+            const contactNumber = document.getElementById('contactNumber').value;
+            const additionalNotes = document.getElementById('additionalNotes').value;
+            const orderDateInput = document.getElementById('orderDate').value;
+
+            // **NEW: Check if delivery date is today**
+            const orderDate = new Date(orderDateInput);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time for comparison
+            orderDate.setHours(0, 0, 0, 0); // Reset time for comparison
+            
+            if (orderDate.getTime() === today.getTime()) {
+                alert('You will be charged a convenience fee of 20 rupees for same-day delivery.');
+            }
+
+            // Validate message length
+            if (message.length > 30) {
+                alert('Custom message cannot exceed 30 characters.');
+                return false;
+            }
+
+            // Validate number of hoodies
+            if (numHoodies <= 0 || numHoodies > 20) {
+                alert('Number of hoodies must be between 1 and 20.');
+                return false;
+            }
+
+            // Validate contact number
+            const phonePattern = /^[789]\d{9}$/;
+            if (!phonePattern.test(contactNumber)) {
+                alert('Contact number must be exactly 10 digits starting with 7, 8, or 9.');
+                return false;
+            }
+
+            // Form is valid, proceed to generate receipt
+            generateReceipt();
+        }
+
+        function generateReceipt() {
+            const form = document.querySelector('form');
+            const formData = new FormData(form);
+            let receiptText = '<h2>Order Confirmation Receipt</h2>';
+
+            // Generate a unique receipt number
+            const receiptNumber = generateUniqueReceiptNumber();
+            receiptText += `<p><strong>Receipt Number:</strong> ${receiptNumber}</p>`;
+
+            formData.forEach((value, key) => {
+                receiptText += `<p><strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> ${value}</p>`;
+            });
+
+            const receiptDate = new Date();
+            receiptText += `<p><strong>Date of Receipt:</strong> ${receiptDate.toLocaleDateString()} ${receiptDate.toLocaleTimeString()}</p>`;
+
+            document.getElementById('receipt').innerHTML = receiptText;
+            document.getElementById('receipt').style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Design Your Own Hoodie</h1>
+    </header>
+    <main>
+        <form onsubmit="validateForm(event)">
+            <fieldset>
+                <legend>Customize Your Hoodie</legend>
+
+                <label for="message">Custom Message:</label>
+                <input type="text" id="message" name="message" placeholder="Enter your custom message" required>
+                <br>
+
+                <label for="hoodieColor">Hoodie Color:</label>
+                <input type="color" id="hoodieColor" name="hoodieColor" value="#ffffff" required>
+                <br>
+
+                <label for="sizeChoice">Size:</label>
+                <select id="sizeChoice" name="sizeChoice" required>
+                    <option value="">Select size</option>
+                    <option value="xs">XS</option>
+                    <option value="s">S</option>
+                    <option value="m">M</option>
+                    <option value="l">L</option>
+                    <option value="xl">XL</option>
+                    <option value="xxl">XXL</option>
+                </select>
+                <br>
+
+                <label for="numHoodies">Number of Hoodies:</label>
+                <input type="number" id="numHoodies" name="numHoodies" min="1" max="20" placeholder="How many?" required>
+                <br>
+
+                <label for="orderDate">Preferred Delivery Date:</label>
+                <input type="date" id="orderDate" name="orderDate" required>
+            </fieldset>
+
+            <fieldset>
+                <legend>Shipping Information</legend>
+
+                <label for="recipientName">Full Name:</label>
+                <input type="text" id="recipientName" name="recipientName" placeholder="Name of the recipient" required>
+                <br>
+
+                <label for="shippingAddress">Address:</label>
+                <input type="text" id="shippingAddress" name="shippingAddress" placeholder="Delivery address" required>
+                <br>
+
+                <label for="contactEmail">Email Address:</label>
+                <input type="email" id="contactEmail" name="contactEmail" placeholder="Your email address" required>
+                <br>
+
+                <label for="contactNumber">Contact Number:</label>
+                <input type="tel" id="contactNumber" name="contactNumber" placeholder="Your phone number" pattern="[789]\d{9}" title="Please enter a valid Indian phone number starting with 7, 8, or 9" required>
+            </fieldset>
+
+            <fieldset>
+                <legend>Additional Information</legend>
+
+                <label for="additionalNotes">Additional Notes:</label>
+                <textarea id="additionalNotes" name="additionalNotes" rows="4" placeholder="Any special instructions or requests"></textarea>
+            </fieldset>
+
+            <button type="submit">Place Order</button>
+            <button type="reset">Clear Form</button>
+        </form>
+
+        <!-- Receipt display area -->
+        <div id="receipt"></div>
+    </main>
+</body>
+</html>
