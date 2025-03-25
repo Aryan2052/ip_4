@@ -40,7 +40,7 @@
             const additionalNotes = document.getElementById('additionalNotes').value;
             const orderDateInput = document.getElementById('orderDate').value;
 
-            // **NEW: Check if delivery date is today**
+            // NEW: Check if delivery date is today**
             const orderDate = new Date(orderDateInput);
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Reset time for comparison
